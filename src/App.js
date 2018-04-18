@@ -10,8 +10,33 @@ class App extends Component {
         { description: 'Walk the dog', isCompleted: true },
         { description: 'Take out the trash', isCompleted: false },
         { description: 'Buy new shoes', isCompleted: false }
-      ]
+      ],
+      newTodoDescription: ''
     };
+  }
+
+  deleteTodo(index) {
+    const todo = this.state.todos[index];
+    const todos = this.state.todos;
+    this.setState({ todos: this.state.todos.filter(todo => todos.length !== index) });
+  }
+
+  handleChange(e) {
+    this.setState({ newTodoDescription: e.target.value });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    if ( !this.state.newTodoDescription ) { return }
+    const newTodo = { description: this.state.newTodoDescription, isCompleted: false };
+    this.setState({ todos: [...this.state.todos, newTodo], newTodoDescription: '' });
+  }
+
+  toggleComplete(index) {
+    const todos = this.state.todos.slice();
+    const todo = todos[index];
+    todo.isCompleted = todo.isCompleted ? false : true;
+    this.setState({ todos: todos });
   }
 
   render() {
@@ -19,9 +44,20 @@ class App extends Component {
       <div className="App">
         <ul>
           { this.state.todos.map( (todo, index) =>
-            <ToDo key={ index } description={ todo.description } isCompleted={ todo.isCompleted } />
-          )}
+            <ToDo key={ index }
+            description={ todo.description }
+            isCompleted={ todo.isCompleted }
+            toggleComplete={ () => this.toggleComplete(index) }
+            deleteTodo={ () => this.deleteTodo(index) }
+            /> )}
         </ul>
+        <form onSubmit={ (e) => this.handleSubmit(e) }>
+          <input type="text"
+          value={ this.state.newTodoDescription }
+          onChange={ (e) => this.handleChange(e) }
+           />
+          <input type="submit" />
+        </form>
       </div>
     );
   }
